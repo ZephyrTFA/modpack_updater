@@ -8,14 +8,14 @@ use serde::Deserialize;
 
 fn main() -> Result<(), String> {
     let args = args().collect::<Vec<_>>();
-    if args.len() != 2 {
-        println!("Must specify the server file regex and nothing else.");
+    if args.len() != 4 {
+        println!("Must specify the github owner, github repo, and server file regex and nothing else.");
         return Ok(());
     }
 
-    let regex = Regex::new(args.get(1).unwrap()).map_err(|e| e.to_string())?;
+    let regex = Regex::new(args.get(3).unwrap()).map_err(|e| e.to_string())?;
     for asset in
-        get_latest_json("https://api.github.com/repos/ThePansmith/Monifactory/releases/latest")
+        get_latest_json(&format!("https://api.github.com/repos/{}/{}/releases/latest", args.get(1).unwrap(), args.get(2).unwrap()))
             .map(|v| v.assets)?
     {
         let captures = regex.captures(&asset.name);
